@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recuperación de la inversión del Estado · Comunidad Energética de Cucurrupí</title>
+<style>
+:root{--bg:#fcfcfb;--card:#f1efe8;--ink:#0b0b0b;--sec:#52514e;--muted:#898781;--grid:#e1e0d9;--base:#c3c2b7;--ring:#fff;--ok:#3b6d11;--bad:#a32d2d;--blue:#2a78d6;--orange:#eb6834;--border:rgba(11,11,11,.15)}
+@media (prefers-color-scheme:dark){:root{--bg:#151515;--card:#222220;--ink:#f0efec;--sec:#c3c2b7;--muted:#898781;--grid:#2c2c2a;--base:#383835;--ring:#151515;--ok:#97c459;--bad:#f09595;--blue:#3987e5;--orange:#d95926;--border:rgba(255,255,255,.15)}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5}
+main{max-width:900px;margin:0 auto;padding:2rem 1.25rem}
+h1{font-size:24px;font-weight:600;margin:0 0 4px}
+.sub{color:var(--sec);margin:0 0 1.5rem;font-size:15px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:14px}
+.kpi{background:var(--card);border-radius:10px;padding:12px 14px}
+.kpi .l{font-size:12px;color:var(--sec)}
+.kpi .v{font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:16px;align-items:center;font-size:13px;color:var(--sec);margin-bottom:8px}
+.legend span{display:flex;align-items:center;gap:6px}
+button{margin-left:auto;font:inherit;font-size:14px;padding:6px 14px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--ink);cursor:pointer}
+button:hover{background:var(--card)}
+svg text{font-family:inherit}
+.notes{margin-top:1.5rem;font-size:14px;color:var(--sec)}
+.notes p{margin:.4rem 0}
+footer{margin-top:2rem;font-size:12px;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<h1>¿Cuándo recupera el Estado su inversión?</h1>
+<p class="sub">Comunidad Energética Solar–Biomasa de Cucurrupí (El Litoral del San Juan, Chocó). Gasto acumulado del Estado para dar servicio de 24 h a 96.372 kWh/año.</p>
+
+<div class="kpis">
+  <div class="kpi"><div class="l">Año</div><div class="v" id="mY">0,0</div></div>
+  <div class="kpi"><div class="l">Estado con diésel</div><div class="v" id="mD">0 M</div></div>
+  <div class="kpi"><div class="l">Estado con el proyecto</div><div class="v" id="mP">756 M</div></div>
+  <div class="kpi"><div class="l">Ahorro neto del Estado</div><div class="v" id="mS">-756 M</div></div>
+</div>
+
+<div class="legend">
+  <span><svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" stroke="var(--orange)" stroke-width="2.5" stroke-dasharray="5 3"/></svg>Diésel 24 h: subsidio de 1.680 COP/kWh (≈162 M/año)</span>
+  <span><svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" stroke="var(--blue)" stroke-width="2.5"/></svg>Proyecto: 756 M de CAPEX + 220 COP/kWh (≈21 M/año)</span>
+  <button id="play">▶ Reproducir</button>
+</div>
+
+<svg id="ch" viewBox="0 0 860 400" width="100%" role="img" aria-label="Gasto acumulado del Estado en millones de COP durante 12 años: diésel contra proyecto comunitario"></svg>
+
+<div class="notes">
+  <p><strong>Diésel:</strong> el kWh cuesta ≈2.100 COP; el hogar paga 418 y el Estado subsidia ≈1.680. Para 24 h: 1.680 × 96.372 ≈ 162 M COP/año.</p>
+  <p><strong>Proyecto:</strong> el Estado aporta una sola vez ≈756 M COP (CAPEX con Ley 1715 + capital de trabajo) y sigue subsidiando la tarifa: el hogar paga 418 y la cuota requerida es ≈640, así que el Estado pone ≈220 COP/kWh (≈21 M COP/año).</p>
+  <p><strong>Resultado:</strong> el Estado ahorra ≈141 M COP/año y recupera la inversión en ≈5,4 años. Desde ahí, todo es ahorro.</p>
+</div>
+<footer>Fuente: Entrega 3, sección 4.2; simulación SAM; Boletín Tarifario ZNI (Superservicios, 2025). Universidad ECCI · Transición Energética Justa 2026-2.</footer>
+</main>
+
+<script>
+const W=860,H=400,L=72,R=20,T=16,B=46,X1=12,Y1=2000;
+const CAP=756,SP=21.2,SD=161.9,CROSS=CAP/(SD-SP);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const sx=t=>L+t/X1*(W-L-R), sy=v=>H-B-v/Y1*(H-T-B);
+const svg=document.getElementById('ch'),ns='http://www.w3.org/2000/svg';
+const el=(n,a,p=svg)=>{const e=document.createElementNS(ns,n);for(const k in a)e.setAttribute(k,a[k]);p.appendChild(e);return e;};
+const txt=(s,a,p)=>{const e=el('text',a,p);e.textContent=s;return e;};
+for(let v=0;v<=Y1;v+=500){el('line',{x1:L,x2:W-R,y1:sy(v),y2:sy(v),stroke:v?'var(--grid)':'var(--base)'});txt(v.toLocaleString('es-CO')+' M',{x:L-8,y:sy(v)+4,'text-anchor':'end','font-size':12,fill:'var(--muted)'});}
+for(let y=0;y<=12;y+=1)txt(y,{x:sx(y),y:H-B+18,'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
+txt('Años de operación',{x:(L+W-R)/2,y:H-8,'text-anchor':'middle','font-size':12,fill:'var(--muted)'});
+txt('Millones de COP',{x:14,y:(T+H-B)/2,'text-anchor':'middle','font-size':12,fill:'var(--muted)',transform:`rotate(-90 14 ${(T+H-B)/2})`});
+const area=el('path',{fill:'var(--blue)','fill-opacity':.13});
+const pD=el('polyline',{fill:'none',stroke:'var(--orange)','stroke-width':3,'stroke-dasharray':'7 5','stroke-linejoin':'round','stroke-linecap':'round'});
+const pP=el('polyline',{fill:'none',stroke:'var(--blue)','stroke-width':3,'stroke-linejoin':'round','stroke-linecap':'round'});
+const dD=el('circle',{r:6,fill:'var(--orange)',stroke:'var(--ring)','stroke-width':2});
+const dP=el('circle',{r:6,fill:'var(--blue)',stroke:'var(--ring)','stroke-width':2});
+const cy=sy(CAP+SP*CROSS),gC=el('g',{opacity:0,style:'transition:opacity .4s'});
+el('line',{x1:sx(CROSS),x2:sx(CROSS),y1:cy,y2:H-B,stroke:'var(--ink)','stroke-dasharray':'3 3'},gC);
+el('circle',{cx:sx(CROSS),cy:cy,r:7,fill:'none',stroke:'var(--ink)','stroke-width':2},gC);
+txt('Año 5,4: inversión recuperada',{x:sx(CROSS)+12,y:cy-28,'font-size':14,'font-weight':600,fill:'var(--ink)'},gC);
+txt('desde aquí todo es ahorro',{x:sx(CROSS)+12,y:cy-11,'font-size':12,fill:'var(--muted)'},gC);
+const gS=el('g',{opacity:0,style:'transition:opacity .4s'});
+txt('Ahorro acumulado ≈141 M/año',{x:sx(10.2),y:sy(1430),'text-anchor':'middle','font-size':13,'font-weight':600,fill:'var(--blue)'},gS);
+const fmt=v=>(v<0?'-':'')+Math.round(Math.abs(v)).toLocaleString('es-CO')+' M';
+function draw(t){
+  const N=Math.max(2,Math.ceil(t*20));const a=[],b=[`${sx(0)},${sy(0)}`];
+  for(let i=0;i<=N;i++){const x=t*i/N;a.push(`${sx(x)},${sy(SD*x)}`);b.push(`${sx(x)},${sy(CAP+SP*x)}`);}
+  pD.setAttribute('points',a.join(' '));pP.setAttribute('points',b.join(' '));
+  dD.setAttribute('cx',sx(t));dD.setAttribute('cy',sy(SD*t));dP.setAttribute('cx',sx(t));dP.setAttribute('cy',sy(CAP+SP*t));
+  if(t>CROSS){const up=[],lo=[];for(let i=0;i<=30;i++){const x=CROSS+(t-CROSS)*i/30;up.push(`${sx(x)},${sy(SD*x)}`);lo.unshift(`${sx(x)},${sy(CAP+SP*x)}`);}area.setAttribute('d','M'+up.join('L')+'L'+lo.join('L')+'Z');}else area.setAttribute('d','');
+  gC.setAttribute('opacity',t>=CROSS?1:0);gS.setAttribute('opacity',t>=9?1:0);
+  document.getElementById('mY').textContent=t.toFixed(1).replace('.',',');
+  document.getElementById('mD').textContent=fmt(SD*t);
+  document.getElementById('mP').textContent=fmt(CAP+SP*t);
+  const s=SD*t-(CAP+SP*t),ms=document.getElementById('mS');ms.textContent=fmt(s);ms.style.color=s>=0?'var(--ok)':'var(--bad)';
+}
+let raf,start;const DUR=10000,btn=document.getElementById('play');
+function run(ts){if(!start)start=ts;const p=Math.min(1,(ts-start)/DUR);draw(p*X1);if(p<1)raf=requestAnimationFrame(run);else btn.textContent='↻ Repetir';}
+btn.onclick=()=>{cancelAnimationFrame(raf);start=null;btn.textContent='⏸ Reproduciendo';raf=requestAnimationFrame(run);};
+draw(0);setTimeout(()=>btn.click(),500);
+</script>
+</body>
+</html>
